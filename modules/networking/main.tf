@@ -8,6 +8,7 @@ module "vpc" {
   azs                          = data.aws_availability_zones.available.names
   create_database_subnet_group = false
   enable_nat_gateway           = false
+  enable_dns_hostnames         = true
   tags = {
     Name      = "vpc terraform module poc"
     CreatedBy = "terraform"
