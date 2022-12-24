@@ -3,6 +3,10 @@ module "networking" {
   namespace = var.namespace
 }
 
+data "local_file" "ssh_key" {
+  filename = "${path.module}/ssh-key.pub"
+}
+
 
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -15,15 +19,15 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"]
 }
 
-resource "aws_key_pair" "sam_test_new_key" {
-  key_name   = "sam_test_new_key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCzIp5hD3rNeWZ0PIpZX0jfrZ/Zhs58fcnQspmhe+vAh7ya6SYPVFSX0uTA9baED6cNFgm+POwR0V9B73duxgcG48sXLOTRqOEm+gOJwxA52cXsSv/LYj6FwWMXJlBzreg7QUlsx61Jqrb8zYXNiERv9buNj91QP8VICJZx1liPQiy3dkOMB6W+fr21rbUtZjZSsb/j/M8K7WtA+WDP5J7M4YFeIfOUejR3D1/79jMOgae0+AtkMe4b2Ln+7+AsPcRfOChkZjCBKEodtL1o45afBAqQDZoknCbY4vtyrBD3KHrOhzvIBAPkgRIAWbfD3SSzEIooFKPP4Xiq7L9o8S2N shaycraft@Samuels-MacBook-Pro.local"
+resource "aws_key_pair" "terraform_local_key_file" {
+  key_name   = "terraform_local_key_file"
+  public_key = data.local_file.ssh_key.content
 }
 
 resource "aws_instance" "wordpress_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name      = "sam_test_new_key"
+  key_name      = "terraform_local_key_file"
   tags = {
     Name = "wordpress_server"
   }
