@@ -25,6 +25,7 @@ resource "aws_key_pair" "terraform_local_key_file" {
 }
 
 resource "aws_instance" "wordpress_server" {
+  depends_on    = [data.local_file.ssh_key]
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   key_name      = "terraform_local_key_file"
@@ -38,7 +39,7 @@ resource "aws_instance" "wordpress_server" {
     type        = "ssh"
     host        = self.public_ip
     user        = "ubuntu"
-    private_key = file("/Users/shaycraft/.ssh/id_rsa_aws_terraform_tutorial")
+    private_key = data.local_file.ssh_key
     timeout     = "4m"
   }
 }
